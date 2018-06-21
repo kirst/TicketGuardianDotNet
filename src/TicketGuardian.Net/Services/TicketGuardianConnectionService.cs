@@ -12,34 +12,35 @@ namespace TicketGuardian.Net.Services
     public class TicketGuardianConnectionService : ITicketGuardianConnectionService
     {
         #region Properties
-        HttpClient Client => new HttpClient();
-        TicketGuardianSettings Settings { get; set; }
-        TokenModel Token { get; set; }
+        private HttpClient _httpClient { get; }
+        private TicketGuardianSettings _settings { get; set; }
+        private TokenModel _token { get; set; }
         #endregion
 
         #region ctors
-        public TicketGuardianConnectionService(TicketGuardianSettings settings)
+        public TicketGuardianConnectionService(TicketGuardianSettings settings, HttpClient httpClient)
         {
-            Settings = settings;
-            Token = GetAuthenticationToken().Result;
+            _settings = settings;
+            _token = GetAuthenticationToken().Result;
+            _httpClient = httpClient;
         }
         #endregion
 
         #region Methods
         public virtual async Task<TokenModel> GetAuthenticationToken()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/token";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/token";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
                 Method = HttpMethod.Get
             };
 
-            request.Headers.Add("api-client-id", Settings.ClientId);
-            request.Headers.Add("api-secret-key", Settings.SecretKey);
-            request.Headers.Add("api-public-key", Settings.PublicKey);
+            request.Headers.Add("api-client-id", _settings.ClientId);
+            request.Headers.Add("api-secret-key", _settings.SecretKey);
+            request.Headers.Add("api-public-key", _settings.PublicKey);
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -52,7 +53,7 @@ namespace TicketGuardian.Net.Services
         // Claims
         public virtual async Task<PagedListModel<ClaimModel>> GetClaims()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/claims";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/claims";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -61,7 +62,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -74,7 +75,7 @@ namespace TicketGuardian.Net.Services
         // Orders
         public virtual async Task<PagedListModel<OrderModel>> GetOrders()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/orders";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/orders";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -83,7 +84,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -96,7 +97,7 @@ namespace TicketGuardian.Net.Services
         // Policies
         public virtual async Task<PagedListModel<ShipPolicyModel>> GetPolicies()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/policies";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/policies";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -105,7 +106,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -117,7 +118,7 @@ namespace TicketGuardian.Net.Services
 
         public virtual async Task<ShipPolicyModel> GetPolicy(int pk)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/policies/{pk}";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/policies/{pk}";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -126,7 +127,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -139,7 +140,7 @@ namespace TicketGuardian.Net.Services
         // Price Tiers
         public virtual async Task<PagedListModel<PriceTierModel>> GetPriceTiers()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/pricetiers";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/pricetiers";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -148,7 +149,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -160,7 +161,7 @@ namespace TicketGuardian.Net.Services
 
         public virtual async Task<PriceTierModel> GetPriceTier(int pk)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/pricetiers/{pk}";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/pricetiers/{pk}";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -169,7 +170,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -182,7 +183,7 @@ namespace TicketGuardian.Net.Services
         // Products
         public virtual async Task<PagedListModel<ProductModel>> GetProducts()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/products";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/products";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -191,7 +192,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -203,7 +204,7 @@ namespace TicketGuardian.Net.Services
 
         public virtual async Task<ProductModel> GetProduct(int pk)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/products/{pk}";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/products/{pk}";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -212,7 +213,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -225,7 +226,7 @@ namespace TicketGuardian.Net.Services
         // Ticket Orders
         public virtual async Task<PagedListModel<TicketOrderModel>> GetTicketOrders()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/ticket-orders";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/ticket-orders";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -234,7 +235,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -246,7 +247,7 @@ namespace TicketGuardian.Net.Services
 
         public virtual async Task<TicketOrderModel> PostTicketOrder(ChargeOrderModel order)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/ticket-orders/";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/ticket-orders/";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -256,7 +257,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -269,7 +270,7 @@ namespace TicketGuardian.Net.Services
         // Ticket Policies
         public virtual async Task<TicketOrderModel> PostTicketPolicy(CreatePolicyModel policy)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/ticket-policies/";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/ticket-policies/";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -279,7 +280,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -292,7 +293,7 @@ namespace TicketGuardian.Net.Services
         // Transactions
         public virtual async Task<PagedListModel<TransactionModel>> GetTransactions()
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/transactions";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/transactions";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -301,7 +302,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -313,7 +314,7 @@ namespace TicketGuardian.Net.Services
 
         public virtual async Task<TransactionModel> GetTransaction(int pk)
         {
-            var url = $"{Urls.ApiUrl(Settings.SandboxEnabled)}/{Settings.ClientId}/transactions/{pk}";
+            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/{_settings.ClientId}/transactions/{pk}";
             var request = new HttpRequestMessage()
             {
                 RequestUri = new Uri(url),
@@ -322,7 +323,7 @@ namespace TicketGuardian.Net.Services
 
             request.Headers.Add("Authorization", GetAuthHeaders());
 
-            var response = await Client.SendAsync(request);
+            var response = await _httpClient.SendAsync(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -336,8 +337,8 @@ namespace TicketGuardian.Net.Services
         #region Helpers
         void ApplyClientData()
         {
-            Client.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            Client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("JWT", $"{Token.JwtToken}");
+            _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("JWT", $"{_token.JwtToken}");
         }
 
         string GetAuthHeaders()
@@ -345,7 +346,7 @@ namespace TicketGuardian.Net.Services
             // TODO: Add check if the token has expired
             // Ticket Guardian tokens live for 3 minutes
             // check our Token.IssueDate against the current time (UTC)
-            return $"JWT {Token.JwtToken}";
+            return $"JWT {_token.JwtToken}";
         }
 
         TicketGuardianException BuildException(HttpStatusCode statusCode, string requestUri, string responseContent)
