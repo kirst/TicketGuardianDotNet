@@ -1,0 +1,8 @@
+{
+  "TicketGuardianSettings": {
+    "ClientId": "test",
+    "PublicKey": "1",
+    "SecretKey": "2",
+    "SandboxEnabled":  true
+  }
+}

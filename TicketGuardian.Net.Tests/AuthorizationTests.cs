@@ -43,8 +43,8 @@ namespace TicketGuardian.Net.Tests
             }
 
             // Assert
-            Assert.Equal(HttpStatusCode.Unauthorized, error.HttpStatusCode);
-            Assert.Equal("could not find a matching API key", error.Message);
+            Assert.Equal(HttpStatusCode.BadRequest, error.HttpStatusCode);
+            Assert.Equal("Bad Public Key or Secret Key.", error.Message);
         }
     }
 }

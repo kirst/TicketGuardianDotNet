@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
@@ -12,8 +13,8 @@ namespace TicketGuardian.Net.Services
     public class TicketGuardianConnectionService : ITicketGuardianConnectionService
     {
         #region Properties
-        private HttpClient _httpClient { get; }
-        private TicketGuardianSettings _settings { get; set; }
+        private readonly HttpClient _httpClient;
+        private readonly TicketGuardianSettings _settings;
         private TokenModel _token { get; set; }
         #endregion
 
@@ -21,7 +22,6 @@ namespace TicketGuardian.Net.Services
         public TicketGuardianConnectionService(TicketGuardianSettings settings, HttpClient httpClient)
         {
             _settings = settings;
-            _token = GetAuthenticationToken().Result;
             _httpClient = httpClient;
         }
         #endregion
@@ -29,25 +29,31 @@ namespace TicketGuardian.Net.Services
         #region Methods
         public virtual async Task<TokenModel> GetAuthenticationToken()
         {
-            var url = $"{Urls.ApiUrl(_settings.SandboxEnabled)}/token";
-            var request = new HttpRequestMessage()
+            var builder = new UriBuilder($"{Urls.ApiUrl(_settings.SandboxEnabled)}/auth/token");
+            _httpClient.DefaultRequestHeaders.Clear();
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("accept", "application/json");
+            _httpClient.DefaultRequestHeaders.TryAddWithoutValidation("TG-Version", "2.0.0");
+
+            var js = new
             {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Get
+                public_key = _settings.PublicKey,
+                secret_key = _settings.SecretKey
             };
 
-            request.Headers.Add("api-client-id", _settings.ClientId);
-            request.Headers.Add("api-secret-key", _settings.SecretKey);
-            request.Headers.Add("api-public-key", _settings.PublicKey);
+            var request = new HttpRequestMessage(HttpMethod.Post, builder.ToString())
+            {
+                Content = JsonContent(js)
+            };
 
-            var response = await _httpClient.SendAsync(request);
+            var response = await _httpClient.SendAsync(request, HttpCompletionOption.ResponseContentRead);
 
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<TokenModel>(await response.Content.ReadAsStringAsync());
+                _token = JsonConvert.DeserializeObject<TokenModel>(await response.Content.ReadAsStringAsync());
+                return _token;
             }
-
-            throw BuildException(response.StatusCode, url, await response.Content.ReadAsStringAsync());
+            
+            throw BuildException(response.StatusCode, builder.ToString(), await response.Content.ReadAsStringAsync());
         }
 
         // Claims
@@ -354,7 +360,7 @@ namespace TicketGuardian.Net.Services
             var error = JsonConvert.DeserializeObject<ErrorResponseModel>(responseContent);
             error.Url = requestUri;
 
-            return new TicketGuardianException(statusCode, error, error.Message);
+            return new TicketGuardianException(statusCode, error, error?.NonFieldErrors?.FirstOrDefault() ?? error?.Message);
         }
 
         HttpContent JsonContent<T>(T item)

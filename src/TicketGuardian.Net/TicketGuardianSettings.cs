@@ -32,7 +32,7 @@ namespace TicketGuardian.Net
             SecretKey = config.GetSection("TicketGuardianSettings:SecretKey").Value;
 
             
-            bool.TryParse(config.GetSection("TickettGuardianSettings:SandboxEnabled").Value, out sandBoxEnabled);
+            bool.TryParse(config.GetSection("TicketGuardianSettings:SandboxEnabled").Value, out sandBoxEnabled);
 #else
             ClientId = System.Configuration.ConfigurationManager.AppSettings["TicketGuardianSettings-ClientId"];
             PublicKey = System.Configuration.ConfigurationManager.AppSettings["TicketGuardianSettings-PublicKey"];

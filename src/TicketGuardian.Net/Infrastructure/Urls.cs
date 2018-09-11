@@ -6,7 +6,7 @@
         {
             get
             {
-                return "https://connect.ticketguardian.net/api/v1";
+                return "https://connect.ticketguardian.net/api/v2";
             }
         }
 
@@ -14,7 +14,7 @@
         {
             get
             {
-                return "https://connect-test.ticketguardian.net/api/v1";
+                return "https://connect-sandbox.ticketguardian.net/api/v2";
             }
         }
 
