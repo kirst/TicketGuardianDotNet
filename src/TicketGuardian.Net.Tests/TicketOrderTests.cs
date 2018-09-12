@@ -51,8 +51,8 @@ namespace TicketGuardian.Net.Tests
 
             var model = new Models.ChargeOrderModel()
             {
-                BillingAddress = "18330 Sutter Blvd",
-                BillingCity = "Morgan Hill",
+                BillingAddress = "123 Street",
+                BillingCity = "Any City",
                 BillingCountry = "USA",
                 BillingState = "CA",
                 BillingZipCode = "95037",
@@ -60,7 +60,7 @@ namespace TicketGuardian.Net.Tests
                 ChargeAmount = 5.99M,
                 Currency = "USD",                
                 CCV = "123",
-                Email = "paul@svetiming.com",                
+                Email = "test@test.com",                
                 ExpMonth = 6,
                 ExpYear = DateTime.Now.Year + 1,
                 FirstName = "Test",

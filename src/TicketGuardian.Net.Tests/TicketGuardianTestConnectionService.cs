@@ -1,25 +1,26 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using TicketGuardian.Net.Infrastructure;
 using TicketGuardian.Net.Models;
+using TicketGuardian.Net.Services;
 
-namespace TicketGuardian.Net.Services
+namespace TicketGuardian.Net.Tests
 {
-    public class TicketGuardianConnectionService : ITicketGuardianConnectionService
+    public class TicketGuardianTestConnectionService : ITicketGuardianConnectionService
     {
         #region Properties
         private readonly HttpClient _httpClient;
         private readonly TicketGuardianSettings _settings;
-        private TokenModel _token { get; set; }
+        public  TokenModel Token { get; set; }
         #endregion
 
         #region ctors
-        public TicketGuardianConnectionService(TicketGuardianSettings settings, HttpClient httpClient)
+        public TicketGuardianTestConnectionService(TicketGuardianSettings settings, HttpClient httpClient)
         {
             _settings = settings;
             _httpClient = httpClient;
@@ -49,10 +50,10 @@ namespace TicketGuardian.Net.Services
 
             if (response.IsSuccessStatusCode)
             {
-                _token = JsonConvert.DeserializeObject<TokenModel>(await response.Content.ReadAsStringAsync());
-                return _token;
+                Token = JsonConvert.DeserializeObject<TokenModel>(await response.Content.ReadAsStringAsync());
+                return Token;
             }
-            
+
             throw BuildException(response.StatusCode, builder.ToString(), await response.Content.ReadAsStringAsync());
         }
 
@@ -344,7 +345,7 @@ namespace TicketGuardian.Net.Services
         private void ApplyClientData()
         {
             _httpClient.DefaultRequestHeaders.Accept.Add(new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
-            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("JWT", $"{_token.JwtToken}");
+            _httpClient.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("JWT", $"{Token.JwtToken}");
         }
 
         private string GetAuthHeaders()
@@ -352,7 +353,7 @@ namespace TicketGuardian.Net.Services
             // TODO: Add check if the token has expired
             // Ticket Guardian tokens live for 3 minutes
             // check our Token.IssueDate against the current time (UTC)
-            return $"JWT {_token.JwtToken}";
+            return $"JWT {Token.JwtToken}";
         }
 
         private TicketGuardianException BuildException(HttpStatusCode statusCode, string requestUri, string responseContent)

@@ -5,6 +5,17 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\ClaimModel.cs" />
+    <Compile Remove="Models\ClientModel.cs" />
+    <Compile Remove="Models\ClientProductModel.cs" />
+    <Compile Remove="Models\PriceTierModel.cs" />
+    <Compile Remove="Models\ProductModel.cs" />
+    <Compile Remove="Models\ShipPolicyModel.cs" />
+    <Compile Remove="Models\TransactionModel.cs" />
+    <Compile Remove="Models\WebHookModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="System.Net.Http" Version="4.3.3" />
   </ItemGroup>

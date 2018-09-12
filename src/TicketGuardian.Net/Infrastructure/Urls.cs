@@ -1,4 +1,8 @@
-﻿namespace TicketGuardian.Net.Infrastructure
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("TicketGuardian.Net.Tests")]
+
+namespace TicketGuardian.Net.Infrastructure
 {
     internal static class Urls
     {
