@@ -6,16 +6,7 @@ namespace TicketGuardian.Net.Models
     public class OrderModel
     {
         [JsonProperty("id")]
-        public int Id { get; set; }
-
-        [JsonProperty("main_transaction")]
-        public TransactionModel MainTransaction { get; set; }
-
-        [JsonProperty("insurance_transaction")]
-        public TransactionModel InsuranceTransaction { get; set; }
-
-        [JsonProperty("insurance_policy")]
-        public ShipPolicyModel InsurancePolicy { get; set; }
+        public int Id { get; set; }        
 
         [JsonProperty("insurance_transaction_amount")]
         public string InsuranceTransactionAmount { get; set; }
